@@ -1,4 +1,4 @@
-import userModel from './models/User';
+import { initializeUser } from './models/User';
 
 import { Sequelize } from 'sequelize';
 import { config } from './config/config';
@@ -8,6 +8,8 @@ let sequelize = new Sequelize(config.url, {
     define: { timestamps: false }
 });
 
-userModel(sequelize);
+const init = () => {
+    initializeUser(sequelize);
+};
 
-export { sequelize };
+export { sequelize, init };

@@ -18,7 +18,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     public username!: string;
 }
 
-export default (sequelize: Sequelize) => {
+export const initializeUser = (sequelize: Sequelize) => {
     User.init({
         id: {
             type: DataTypes.INTEGER,
