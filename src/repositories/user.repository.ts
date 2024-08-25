@@ -1,7 +1,7 @@
 import { BaseRepository } from './base.repository';
-import { User } from '../database/db';
+import { User } from '../database/models';
 
-class UserRepository extends BaseRepository<typeof User> {
+class UserRepository extends BaseRepository<User> {
     constructor() {
         super(User);
     }

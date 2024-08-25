@@ -1,38 +1,38 @@
-import { Model } from 'sequelize';
+import { Model, ModelStatic, Attributes, WhereOptions, CreationAttributes } from 'sequelize';
 
 export class BaseRepository<M extends Model<object, object>> {
-    constructor(protected model: M) { }
+    constructor(protected model: ModelStatic<M>) { }
 
-    async create(data: any): Promise<M> {
-        return this.model.create(data);
+    async create(data: CreationAttributes<M>): Promise<M> {
+        return this.model.create<M>(data);
     }
 
     async getById(id: number): Promise<M | null> {
-        return this.model.findOne({
-            where: {id}
+        return this.model.findOne<M>({
+            where: {id} as unknown as WhereOptions<Attributes<M>>
         });
     }
 
-    async getByAttribute(attribute: any): Promise<M | null> {
-        return this.model.findOne({
+    async getByAttribute(attribute: WhereOptions<Attributes<M>>): Promise<M | null> {
+        return this.model.findOne<M>({
             where: attribute
         })
     }
 
     async getAll(): Promise<M[]> {
-        return this.model.findAll();
+        return this.model.findAll<M>();
     }
 
-    async update(id: number, data: any): Promise<[number, M[]]> {
+    async update(id: number, data: Partial<Attributes<M>>): Promise<[number]> {
         return this.model.update(
-            { data: data },
-            { where: {id} }
+            data as Attributes<M>,
+            { where: {id} as unknown as WhereOptions<Attributes<M>> }
         );
     }
 
     async delete(id: number): Promise<number> {
         return this.model.destroy({
-            where: {id}
+            where: { id } as unknown as WhereOptions<Attributes<M>>
         });
     }
 }

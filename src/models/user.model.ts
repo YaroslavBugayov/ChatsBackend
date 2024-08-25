@@ -1,6 +1,6 @@
 export interface UserModel {
-    id: number,
     email: string,
     username: string,
-    password: string
+    password: string,
+    refreshToken: string
 }

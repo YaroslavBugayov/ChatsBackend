@@ -18,7 +18,7 @@ export const tokenService = {
         return { accessToken, refreshToken };
     },
 
-    async saveToken(userId: number, refreshToken: string) : Promise<UserModel | null> {
+    async saveToken(userId: number, refreshToken: string) : Promise<UserModel> {
         await userService.update(userId, { refreshToken: refreshToken });
         return userService.getById(userId);
     },

@@ -1,4 +1,4 @@
-import userModel from './models/user.model';
+import userModel from './models/User';
 
 import { Sequelize } from 'sequelize';
 import { config } from './config/config';
@@ -8,7 +8,6 @@ let sequelize = new Sequelize(config.url, {
     define: { timestamps: false }
 });
 
-const User = userModel(sequelize);
+userModel(sequelize);
 
 export { sequelize };
-export { User };
