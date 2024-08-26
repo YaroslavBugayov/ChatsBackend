@@ -1,4 +1,4 @@
-import { UserModel } from '../models';
+import { UserModel, CredentialsModel } from '../models';
 import { userRepository } from '../repositories/user.repository';
 import { User } from '../database/models';
 import { ApiError } from '../errors/api.error';
@@ -29,7 +29,7 @@ export const userService = {
         return generateAndSaveToken(user);
     },
 
-    async update(id: number, data: Partial<Attributes<UserModel>>): Promise<UserModel> {
+    async update(id: number, data: Partial<Attributes<User>>): Promise<UserModel> {
         await userRepository.update(id, data);
         return this.getById(id);
     },
@@ -38,7 +38,7 @@ export const userService = {
         return userRepository.delete(id);
     },
 
-    async login(data: { email: string, password: string }): Promise<UserModel> {
+    async login(data: CredentialsModel): Promise<UserModel> {
         const user: User | null = await userRepository.getByAttribute({ email: data.email });
 
         if (!user) {
@@ -52,7 +52,7 @@ export const userService = {
         return generateAndSaveToken(user);
     },
 
-    async logout(refreshToken: string): Promise<UserModel | null> {
+    async logout(refreshToken: string): Promise<UserModel> {
         if (!refreshToken) {
             throw ApiError.UnauthorizedError();
         }
@@ -66,7 +66,7 @@ export const userService = {
         return await tokenService.removeToken(userId);
     },
 
-    async refresh(refreshToken: string): Promise<UserModel | null> {
+    async refresh(refreshToken: string): Promise<UserModel> {
         if (!refreshToken) {
             throw ApiError.UnauthorizedError();
         }

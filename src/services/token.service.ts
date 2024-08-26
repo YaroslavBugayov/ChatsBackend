@@ -23,7 +23,7 @@ export const tokenService = {
         return userService.getById(userId);
     },
 
-    async removeToken(userId: number) : Promise<UserModel | null> {
+    async removeToken(userId: number) : Promise<UserModel> {
         await userService.update(userId, { refreshToken: '' });
         return userService.getById(userId);
     },
