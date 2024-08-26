@@ -9,11 +9,11 @@ export class ApiError extends Error {
         return new ApiError(400, message);
     }
 
-    static UnauthorizedError() {
-        return new ApiError(401, "User not authorized");
+    static UnauthorizedError(message: string = "User not authorized"): ApiError {
+        return new ApiError(401, message);
     }
 
-    static ForbiddenError() {
+    static ForbiddenError(): ApiError {
         return new ApiError(403, "Forbidden");
     }
 

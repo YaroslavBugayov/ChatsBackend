@@ -20,7 +20,6 @@ export class BaseRepository<M extends Model<object, object>> {
         } catch (error: any) {
             throw new ApiError(400, error.message);
         }
-
     }
 
     async getByAttribute(attribute: WhereOptions<Attributes<M>>): Promise<M | null> {
@@ -31,7 +30,6 @@ export class BaseRepository<M extends Model<object, object>> {
         } catch (error: any) {
             throw new ApiError(400, error.message);
         }
-
     }
 
     async getAll(): Promise<M[]> {
@@ -40,7 +38,6 @@ export class BaseRepository<M extends Model<object, object>> {
         } catch (error: any) {
             throw new ApiError(400, error.message);
         }
-
     }
 
     async update(id: number, data: Partial<Attributes<M>>): Promise<[number]> {
@@ -52,7 +49,6 @@ export class BaseRepository<M extends Model<object, object>> {
         } catch (error: any) {
             throw new ApiError(400, error.message);
         }
-
     }
 
     async delete(id: number): Promise<number> {

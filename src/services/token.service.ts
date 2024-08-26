@@ -24,7 +24,7 @@ export const tokenService = {
     },
 
     async removeToken(userId: number) : Promise<UserModel | null> {
-        await userService.update(userId, { refreshToken: null });
+        await userService.update(userId, { refreshToken: '' });
         return userService.getById(userId);
     },
 
