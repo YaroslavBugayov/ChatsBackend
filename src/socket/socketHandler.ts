@@ -56,6 +56,27 @@ export const handleSocketConnection = (socket: Socket, io: Server ) => {
         }
     });
 
+    socket.on('leave-room', ({ id }: { id: string }) => {
+        socket.leave(id);
+        const room = rooms.find(item => item.id === id);
+        if (room) {
+            removeFromList<string>(room.users, currentUser);
+            io.emit('rooms', JSON.stringify({ rooms: rooms }));
+            console.log(`User ${currentUser} has left the room ${id}`);
+        } else {
+            socket.emit('error', JSON.stringify({ errorMessage: 'Room not found' }));
+        }
+    });
+
+    socket.on('message', ({ messageText, roomId }: { messageText: string, roomId: string }) => {
+        const room = rooms.find(item => item.id === roomId);
+        if (room) {
+            io.to(roomId).emit('message', { username: currentUser, messageText: messageText, roomId: roomId });
+        } else {
+            socket.emit('error', JSON.stringify({ errorMessage: 'Room not found' }));
+        }
+    });
+
     socket.on('disconnect', () => {
         removeFromList<string>(users, currentUser);
         io.emit('users', JSON.stringify({ users: users }));
