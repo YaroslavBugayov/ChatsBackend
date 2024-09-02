@@ -21,22 +21,13 @@ export const handleSocketConnection = (socket: Socket, io: Server ) => {
     } else {
         users.push(currentUser);
 
-        io.emit('users', JSON.stringify({ users: users }) as any);
+        io.emit('users', JSON.stringify({ users: users }));
     }
-    socket.emit('rooms', JSON.stringify({ rooms: rooms }) as any);
-
-    socket.on('disconnect', () => {
-        const index = users.indexOf(currentUser);
-        if (index > -1) {
-            users.splice(index, 1);
-        }
-        io.emit('users', JSON.stringify({ users: users }) as any);
-        console.log(`${socket.id}: ${currentUser} disconnected`);
-    });
+    socket.emit('rooms', JSON.stringify({ rooms: rooms }));
 
     socket.on('create-room', ({ name }: { name: string }) => {
         if (rooms.map(room => room.name).includes(name)) {
-            socket.emit('error', JSON.stringify({ errorMessage: 'This room already exists' }) as any);
+            socket.emit('error', JSON.stringify({ errorMessage: 'This room already exists' }));
         } else {
             const id = v4();
             rooms.push({ id: id, name: name, users: [] });
@@ -45,11 +36,48 @@ export const handleSocketConnection = (socket: Socket, io: Server ) => {
         }
     });
 
-    socket.on('removeRoom', (id: string) => {
-        const index = rooms.findIndex(room => room.id === id);
-        if (index > -1) {
-            rooms.splice(index, 1);
-            io.emit('rooms', JSON.stringify(rooms));
+    // socket.on('removeRoom', (id: string) => {
+    //     const index = rooms.findIndex(room => room.id === id);
+    //     if (index > -1) {
+    //         rooms.splice(index, 1);
+    //         io.emit('rooms', JSON.stringify(rooms));
+    //     }
+    // });
+
+    socket.on('join-room', ({ id }: { id: string }) => {
+        socket.join(id);
+        const room = rooms.find(item => item.id === id);
+        if (room) {
+            room.users.push(currentUser);
+            io.emit('rooms', JSON.stringify({ rooms: rooms }));
+            console.log(`User ${currentUser} has joined the room ${id}`);
+        } else {
+            socket.emit('error', JSON.stringify({ errorMessage: 'Room not found' }));
         }
     });
+
+    socket.on('disconnect', () => {
+        removeFromList<string>(users, currentUser);
+        io.emit('users', JSON.stringify({ users: users }));
+
+        const activeRooms = rooms.filter((room: Room) => room.users.includes(currentUser));
+        if (activeRooms.length > 0) {
+            activeRooms.forEach((room: Room) => {
+                console.log(`User ${currentUser} has left the room ${room.id}`);
+                removeFromList<string>(room.users, currentUser);
+            })
+        }
+        io.emit('rooms', JSON.stringify({ rooms: rooms }));
+
+        console.log(`${socket.id}: ${currentUser} disconnected`);
+    });
+}
+
+const removeFromList = <T>(list: T[], item: T): boolean => {
+    const index = list.indexOf(item);
+    if (index > -1) {
+        list.splice(index, 1);
+        return true;
+    }
+    return false;
 }
